@@ -1,5 +1,6 @@
 Flask
 pymongo
+dnspython
 python-dotenv
 openpyxl
 gunicorn
