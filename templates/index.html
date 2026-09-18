@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gen AI Dataset Automation</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 110px;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea:focus {
+            outline: 2px solid #0d6efd;
+            border-color: transparent;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 9px 14px;
+            margin: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .generate-btn {
+            background: #222;
+            color: white;
+            padding: 12px 22px;
+            margin-top: 12px;
+            font-size: 15px;
+        }
+
+        .add-btn {
+            background: #198754;
+            color: white;
+        }
+
+        .save-btn {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .delete-row-btn,
+        .delete-dataset-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .download-btn {
+            background: #212529;
+            color: white;
+        }
+
+        .edit-btn {
+            background: #ffc107;
+            color: #111;
+        }
+
+        .preview-btn {
+            background: #6f42c1;
+            color: white;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 11px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success {
+            background: #d1e7dd;
+            color: #0f5132;
+            display: block;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #842029;
+            display: block;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #212529;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        td[contenteditable="true"] {
+            background: #fff;
+            cursor: text;
+        }
+
+        td[contenteditable="true"]:focus {
+            outline: 2px solid #0d6efd;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .table-actions {
+            margin-top: 15px;
+        }
+
+        .empty-message {
+            color: #777;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dataset-count {
+            background: #212529;
+            color: white;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .dataset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 18px;
+        }
+
+        .dataset-item {
+            border: 1px solid #e1e1e1;
+            border-radius: 12px;
+            padding: 20px;
+            background: #fff;
+            transition: 0.2s;
+        }
+
+        .dataset-item:hover {
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .dataset-icon {
+            width: 42px;
+            height: 42px;
+            background: #212529;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .dataset-title {
+            font-weight: bold;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .dataset-info {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .dataset-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: #f1f3f5;
+            color: #555;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .dataset-actions {
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+        }
+
+        .preview-box {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .preview-table-container {
+            overflow-x: auto;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+            font-size: 12px;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            padding: 7px;
+            border: 1px solid #ddd;
+        }
+
+        .preview-table th {
+            background: #6f42c1;
+        }
+
+        .preview-note {
+            font-size: 12px;
+            color: #777;
+            margin-top: 8px;
+        }
+
+        .no-preview {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .search-box input,
+        .filter-box select {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .search-box input:focus,
+        .filter-box select:focus {
+            outline: 2px solid #0d6efd;
+            border-color: transparent;
+        }
+
+        .filter-box {
+            width: 180px;
+        }
+
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .results-info {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .dataset-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+
+            button {
+                margin: 3px 2px;
+            }
+
+            .filter-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Gen AI Dataset Automation</h1>
+        <p>Generate, edit, manage and export datasets easily</p>
+    </div>
+
+
+    <div class="card">
+
+        <h2 class="section-title">Generate Dataset</h2>
+
+        <textarea
+            id="prompt"
+            placeholder="Example: Generate 20 student records with name, age, branch, cgpa and email"
+        ></textarea>
+
+        <br>
+
+        <button
+            class="generate-btn"
+            onclick="generateDataset()"
+        >
+            Generate Dataset
+        </button>
+
+        <div id="status" class="status"></div>
+
+    </div>
+
+
+    <div
+        id="generatedSection"
+        class="card hidden"
+    >
+
+        <h2 class="section-title">Generated Dataset</h2>
+
+        <div class="table-container">
+
+            <table id="datasetTable">
+
+                <thead>
+                    <tr id="datasetHead"></tr>
+                </thead>
+
+                <tbody id="datasetBody"></tbody>
+
+            </table>
+
+        </div>
+
+        <div class="table-actions">
+
+            <button
+                class="add-btn"
+                onclick="addNewRow()"
+            >
+                + Add Row
+            </button>
+
+            <button
+                class="save-btn"
+                onclick="saveGeneratedDataset()"
+            >
+                Save Changes
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="dashboard-header">
+
+            <div>
+                <h2 class="section-title">
+                    Dataset History
+                </h2>
+
+                <div style="color:#666; font-size:14px;">
+                    Manage your previously generated datasets
+                </div>
+            </div>
+
+            <div
+                id="datasetCount"
+                class="dataset-count"
+            >
+                0 Datasets
+            </div>
+
+        </div>
+
+
+        <div class="search-filter">
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search datasets..."
+                    oninput="filterDatasets()"
+                >
+
+            </div>
+
+
+            <div class="filter-box">
+
+                <select
+                    id="columnFilter"
+                    onchange="filterDatasets()"
+                >
+
+                    <option value="all">
+                        All Columns
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                class="clear-btn"
+                onclick="clearFilters()"
+            >
+                Clear
+            </button>
+
+        </div>
+
+
+        <div
+            id="resultsInfo"
+            class="results-info"
+        >
+            Showing all datasets
+        </div>
+
+
+        <div id="savedDatasets">
+
+            <div class="empty-message">
+                Loading datasets...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let currentDataset = [];
+let currentColumns = [];
+let currentDatasetId = null;
+
+let allSavedDatasets = [];
+
+
+function showStatus(message, type) {
+
+    const status =
+        document.getElementById("status");
+
+    status.textContent = message;
+
+    status.className =
+        "status " + type;
+
+}
+
+
+function formatColumnName(column) {
+
+    return column
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, function(letter) {
+            return letter.toUpperCase();
+        });
+
+}
+
+
+async function generateDataset() {
+
+    const prompt =
+        document
+            .getElementById("prompt")
+            .value
+            .trim();
+
+
+    if (!prompt) {
+
+        showStatus(
+            "Please enter a prompt.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    showStatus(
+        "Generating dataset...",
+        "success"
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/generate",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        prompt: prompt
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Generation failed"
+            );
+
+        }
+
+
+        currentDataset =
+            result.dataset || [];
+
+
+        currentColumns =
+            result.columns || [];
+
+
+        currentDatasetId =
+            result.dataset_id;
+
+
+        renderGeneratedDataset();
+
+
+        document
+            .getElementById(
+                "generatedSection"
+            )
+            .classList.remove(
+                "hidden"
+            );
+
+
+        showStatus(
+            `Generated ${result.rows} rows with ${result.columns.length} columns.`,
+            "success"
+        );
+
+
+        loadSavedDatasets();
+
+    }
+
+    catch (error) {
+
+        showStatus(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+function renderGeneratedDataset() {
+
+    const head =
+        document.getElementById(
+            "datasetHead"
+        );
+
+
+    const body =
+        document.getElementById(
+            "datasetBody"
+        );
+
+
+    head.innerHTML = "";
+
+    body.innerHTML = "";
+
+
+    if (
+        !currentDataset ||
+        currentDataset.length === 0
+    ) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="100%">
+                    No data available
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    currentColumns =
+        Object.keys(
+            currentDataset[0]
+        );
+
+
+    currentColumns.forEach(
+        function(column) {
+
+            const th =
+                document.createElement("th");
+
+
+            th.textContent =
+                formatColumnName(
+                    column
+                );
+
+
+            head.appendChild(th);
+
+        }
+    );
+
+
+    const actionHeader =
+        document.createElement("th");
+
+
+    actionHeader.textContent =
+        "Action";
+
+
+    head.appendChild(
+        actionHeader
+    );
+
+
+    currentDataset.forEach(
+        function(row, rowIndex) {
+
+            const tr =
+                document.createElement("tr");
+
+
+            currentColumns.forEach(
+                function(column) {
+
+                    const td =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    td.contentEditable =
+                        "true";
+
+
+                    td.textContent =
+                        row[column] ?? "";
+
+
+                    td.dataset.column =
+                        column;
+
+
+                    tr.appendChild(td);
+
+                }
+            );
+
+
+            const actionTd =
+                document.createElement(
+                    "td"
+                );
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.textContent =
+                "Delete";
+
+
+            deleteButton.className =
+                "delete-row-btn";
+
+
+            deleteButton.onclick =
+                function() {
+
+                    deleteGeneratedRow(
+                        rowIndex
+                    );
+
+                };
+
+
+            actionTd.appendChild(
+                deleteButton
+            );
+
+
+            tr.appendChild(
+                actionTd
+            );
+
+
+            body.appendChild(
+                tr
+            );
+
+        }
+    );
+
+}
+
+
+function collectGeneratedDataset() {
+
+    const rows = [];
+
+
+    const tableRows =
+        document.querySelectorAll(
+            "#datasetBody tr"
+        );
+
+
+    tableRows.forEach(
+        function(tr) {
+
+            const cells =
+                tr.querySelectorAll(
+                    "td"
+                );
+
+
+            if (cells.length === 0) {
+                return;
+            }
+
+
+            const row = {};
+
+
+            currentColumns.forEach(
+                function(column, index) {
+
+                    if (cells[index]) {
+
+                        row[column] =
+                            cells[index]
+                                .textContent
+                                .trim();
+
+                    }
+
+                }
+            );
+
+
+            rows.push(row);
+
+        }
+    );
+
+
+    return rows;
+
+}
+
+
+function addNewRow() {
+
+    if (
+        currentColumns.length === 0
+    ) {
+
+        showStatus(
+            "No columns available.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const newRow = {};
+
+
+    currentColumns.forEach(
+        function(column) {
+
+            newRow[column] = "";
+
+        }
+    );
+
+
+    currentDataset.push(
+        newRow
+    );
+
+
+    renderGeneratedDataset();
+
+}
+
+
+function deleteGeneratedRow(index) {
+
+    if (
+        !confirm(
+            "Are you sure you want to delete this row?"
+        )
+    ) {
+        return;
+    }
+
+
+    currentDataset.splice(
+        index,
+        1
+    );
+
+
+    renderGeneratedDataset();
+
+}
+
+
+async function saveGeneratedDataset() {
+
+    if (!currentDatasetId) {
+
+        showStatus(
+            "No dataset selected.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const updatedDataset =
+        collectGeneratedDataset();
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/dataset/${currentDatasetId}`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        dataset:
+                            updatedDataset
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Failed to save dataset"
+            );
+
+        }
+
+
+        currentDataset =
+            updatedDataset;
+
+
+        showStatus(
+            "Dataset saved successfully.",
+            "success"
+        );
+
+
+        loadSavedDatasets();
+
+    }
+
+    catch (error) {
+
+        showStatus(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+async function loadSavedDatasets() {
+
+    const container =
+        document.getElementById(
+            "savedDatasets"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/datasets"
+            );
+
+
+        const result =
+            await response.json();
+
+
+        allSavedDatasets =
+            result.datasets || [];
+
+
+        updateColumnFilter();
+
+
+        renderSavedDatasets(
+            allSavedDatasets
+        );
+
+    }
+
+    catch (error) {
+
+        container.innerHTML = `
+            <div class="empty-message">
+                Failed to load datasets.
+            </div>
+        `;
+
+    }
+
+}
+
+
+function updateColumnFilter() {
+
+    const filter =
+        document.getElementById(
+            "columnFilter"
+        );
+
+
+    const previousValue =
+        filter.value;
+
+
+    const columnsSet =
+        new Set();
+
+
+    allSavedDatasets.forEach(
+        function(datasetItem) {
+
+            const dataset =
+                datasetItem.dataset || [];
+
+
+            if (dataset.length > 0) {
+
+                Object.keys(
+                    dataset[0]
+                ).forEach(
+                    function(column) {
+
+                        columnsSet.add(
+                            column
+                        );
+
+                    }
+                );
+
+            }
+
+        }
+    );
+
+
+    filter.innerHTML = `
+        <option value="all">
+            All Columns
+        </option>
+    `;
+
+
+    Array.from(columnsSet)
+        .sort()
+        .forEach(
+            function(column) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    column;
+
+
+                option.textContent =
+                    formatColumnName(
+                        column
+                    );
+
+
+                filter.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+    if (
+        Array.from(
+            filter.options
+        ).some(
+            function(option) {
+                return option.value === previousValue;
+            }
+        )
+    ) {
+
+        filter.value =
+            previousValue;
+
+    }
+
+}
+
+
+function filterDatasets() {
+
+    const searchValue =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const selectedColumn =
+        document
+            .getElementById(
+                "columnFilter"
+            )
+            .value;
+
+
+    const filtered =
+        allSavedDatasets.filter(
+            function(datasetItem) {
+
+                const prompt =
+                    (
+                        datasetItem.prompt ||
+                        ""
+                    ).toLowerCase();
+
+
+                const dataset =
+                    datasetItem.dataset ||
+                    [];
+
+
+                const columns =
+                    dataset.length > 0
+                        ? Object.keys(
+                            dataset[0]
+                        )
+                        : [];
+
+
+                const promptMatch =
+                    !searchValue ||
+                    prompt.includes(
+                        searchValue
+                    );
+
+
+                const columnMatch =
+                    selectedColumn === "all" ||
+                    columns.includes(
+                        selectedColumn
+                    );
+
+
+                return (
+                    promptMatch &&
+                    columnMatch
+                );
+
+            }
+        );
+
+
+    renderSavedDatasets(
+        filtered
+    );
+
+
+    updateResultsInfo(
+        filtered.length,
+        searchValue,
+        selectedColumn
+    );
+
+}
+
+
+function updateResultsInfo(
+    count,
+    searchValue,
+    selectedColumn
+) {
+
+    const info =
+        document.getElementById(
+            "resultsInfo"
+        );
+
+
+    if (
+        !searchValue &&
+        selectedColumn === "all"
+    ) {
+
+        info.textContent =
+            "Showing all datasets";
+
+        return;
+    }
+
+
+    info.textContent =
+        `Showing ${count} matching dataset${count === 1 ? "" : "s"}`;
+
+}
+
+
+function clearFilters() {
+
+    document
+        .getElementById(
+            "searchInput"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "columnFilter"
+        )
+        .value = "all";
+
+
+    renderSavedDatasets(
+        allSavedDatasets
+    );
+
+
+    document
+        .getElementById(
+            "resultsInfo"
+        )
+        .textContent =
+        "Showing all datasets";
+
+}
+
+
+function renderSavedDatasets(
+    datasets
+) {
+
+    const container =
+        document.getElementById(
+            "savedDatasets"
+        );
+
+
+    const countElement =
+        document.getElementById(
+            "datasetCount"
+        );
+
+
+    countElement.textContent =
+        `${allSavedDatasets.length} Dataset${allSavedDatasets.length === 1 ? "" : "s"}`;
+
+
+    if (
+        datasets.length === 0
+    ) {
+
+        container.innerHTML = `
+            <div class="empty-message">
+                No datasets match your search.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        '<div class="dataset-grid"></div>';
+
+
+    const grid =
+        container.querySelector(
+            ".dataset-grid"
+        );
+
+
+    datasets.forEach(
+        function(datasetItem) {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "dataset-item";
+
+
+            const icon =
+                document.createElement(
+                    "div"
+                );
+
+
+            icon.className =
+                "dataset-icon";
+
+
+            icon.textContent =
+                "DB";
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+
+            title.className =
+                "dataset-title";
+
+
+            title.textContent =
+                datasetItem.prompt;
+
+
+            const dataset =
+                datasetItem.dataset || [];
+
+
+            const columns =
+                dataset.length > 0
+                    ? Object.keys(
+                        dataset[0]
+                    )
+                    : [];
+
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "dataset-info";
+
+
+            info.textContent =
+                `${dataset.length} rows × ${columns.length} columns`;
+
+
+            const tags =
+                document.createElement(
+                    "div"
+                );
+
+
+            tags.className =
+                "dataset-tags";
+
+
+            columns
+                .slice(0, 6)
+                .forEach(
+                    function(column) {
+
+                        const tag =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        tag.className =
+                            "tag";
+
+
+                        tag.textContent =
+                            formatColumnName(
+                                column
+                            );
+
+
+                        tags.appendChild(
+                            tag
+                        );
+
+                    }
+                );
+
+
+            if (
+                columns.length > 6
+            ) {
+
+                const tag =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                tag.className =
+                    "tag";
+
+
+                tag.textContent =
+                    `+${columns.length - 6} more`;
+
+
+                tags.appendChild(
+                    tag
+                );
+
+            }
+
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "dataset-actions";
+
+
+            const previewButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            previewButton.textContent =
+                "Preview";
+
+
+            previewButton.className =
+                "preview-btn";
+
+
+            previewButton.onclick =
+                function() {
+
+                    togglePreview(
+                        datasetItem._id,
+                        dataset
+                    );
+
+                };
+
+
+            const editButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            editButton.textContent =
+                "Edit";
+
+
+            editButton.className =
+                "edit-btn";
+
+
+            editButton.onclick =
+                function() {
+
+                    editSavedDataset(
+                        datasetItem._id,
+                        dataset
+                    );
+
+                };
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.textContent =
+                "Delete";
+
+
+            deleteButton.className =
+                "delete-dataset-btn";
+
+
+            deleteButton.onclick =
+                function() {
+
+                    deleteDataset(
+                        datasetItem._id
+                    );
+
+                };
+
+
+            const jsonButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            jsonButton.textContent =
+                "JSON";
+
+
+            jsonButton.className =
+                "download-btn";
+
+
+            jsonButton.onclick =
+                function() {
+
+                    downloadDataset(
+                        datasetItem._id,
+                        "json"
+                    );
+
+                };
+
+
+            const csvButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            csvButton.textContent =
+                "CSV";
+
+
+            csvButton.className =
+                "download-btn";
+
+
+            csvButton.onclick =
+                function() {
+
+                    downloadDataset(
+                        datasetItem._id,
+                        "csv"
+                    );
+
+                };
+
+
+            const excelButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            excelButton.textContent =
+                "Excel";
+
+
+            excelButton.className =
+                "download-btn";
+
+
+            excelButton.onclick =
+                function() {
+
+                    downloadDataset(
+                        datasetItem._id,
+                        "excel"
+                    );
+
+                };
+
+
+            actions.appendChild(
+                previewButton
+            );
+
+
+            actions.appendChild(
+                editButton
+            );
+
+
+            actions.appendChild(
+                deleteButton
+            );
+
+
+            actions.appendChild(
+                jsonButton
+            );
+
+
+            actions.appendChild(
+                csvButton
+            );
+
+
+            actions.appendChild(
+                excelButton
+            );
+
+
+            const previewBox =
+                document.createElement(
+                    "div"
+                );
+
+
+            previewBox.className =
+                "preview-box hidden";
+
+
+            previewBox.id =
+                `preview-${datasetItem._id}`;
+
+
+            item.appendChild(
+                icon
+            );
+
+
+            item.appendChild(
+                title
+            );
+
+
+            item.appendChild(
+                info
+            );
+
+
+            item.appendChild(
+                tags
+            );
+
+
+            item.appendChild(
+                actions
+            );
+
+
+            item.appendChild(
+                previewBox
+            );
+
+
+            grid.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+function togglePreview(
+    datasetId,
+    dataset
+) {
+
+    const previewBox =
+        document.getElementById(
+            `preview-${datasetId}`
+        );
+
+
+    if (!previewBox) {
+        return;
+    }
+
+
+    if (
+        !previewBox.classList.contains(
+            "hidden"
+        )
+    ) {
+
+        previewBox.classList.add(
+            "hidden"
+        );
+
+        previewBox.innerHTML = "";
+
+        return;
+    }
+
+
+    if (
+        !dataset ||
+        dataset.length === 0
+    ) {
+
+        previewBox.innerHTML = `
+            <div class="no-preview">
+                This dataset is empty.
+            </div>
+        `;
+
+        previewBox.classList.remove(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    const columns =
+        Object.keys(
+            dataset[0]
+        );
+
+
+    const previewRows =
+        dataset.slice(
+            0,
+            5
+        );
+
+
+    let html = `
+        <div class="preview-table-container">
+            <table class="preview-table">
+                <thead>
+                    <tr>
+    `;
+
+
+    columns.forEach(
+        function(column) {
+
+            html += `
+                <th>
+                    ${escapeHtml(
+                        formatColumnName(
+                            column
+                        )
+                    )}
+                </th>
+            `;
+
+        }
+    );
+
+
+    html += `
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+
+    previewRows.forEach(
+        function(row) {
+
+            html += "<tr>";
+
+
+            columns.forEach(
+                function(column) {
+
+                    html += `
+                        <td>
+                            ${escapeHtml(
+                                String(
+                                    row[column] ?? ""
+                                )
+                            )}
+                        </td>
+                    `;
+
+                }
+            );
+
+
+            html += "</tr>";
+
+        }
+    );
+
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+
+        <div class="preview-note">
+            Showing first ${previewRows.length} of ${dataset.length} rows.
+        </div>
+    `;
+
+
+    previewBox.innerHTML =
+        html;
+
+
+    previewBox.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+function escapeHtml(value) {
+
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function editSavedDataset(
+    datasetId,
+    dataset
+) {
+
+    currentDatasetId =
+        datasetId;
+
+
+    currentDataset =
+        JSON.parse(
+            JSON.stringify(dataset)
+        );
+
+
+    if (
+        currentDataset.length > 0
+    ) {
+
+        currentColumns =
+            Object.keys(
+                currentDataset[0]
+            );
+
+    }
+    else {
+
+        currentColumns = [];
+
+    }
+
+
+    renderGeneratedDataset();
+
+
+    document
+        .getElementById(
+            "generatedSection"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+
+    showStatus(
+        "Dataset loaded for editing.",
+        "success"
+    );
+
+}
+
+
+async function deleteDataset(
+    datasetId
+) {
+
+    if (
+        !confirm(
+            "Are you sure you want to delete this dataset?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/dataset/${datasetId}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Failed to delete dataset"
+            );
+
+        }
+
+
+        if (
+            currentDatasetId === datasetId
+        ) {
+
+            currentDatasetId =
+                null;
+
+
+            currentDataset = [];
+
+
+            currentColumns = [];
+
+
+            document
+                .getElementById(
+                    "generatedSection"
+                )
+                .classList.add(
+                    "hidden"
+                );
+
+        }
+
+
+        loadSavedDatasets();
+
+
+        showStatus(
+            "Dataset deleted successfully.",
+            "success"
+        );
+
+    }
+
+    catch (error) {
+
+        showStatus(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+function downloadDataset(
+    datasetId,
+    format
+) {
+
+    window.location.href =
+        `/dataset/${datasetId}/download/${format}`;
+
+}
+
+
+loadSavedDatasets();
+
+</script>
+
+</body>
+</html>
